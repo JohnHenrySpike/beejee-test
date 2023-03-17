@@ -7,19 +7,17 @@ class Auth {
     private $validUser = "admin";
     private $validPass = "123";
 
+    private const ISAUTH = "isAuth";
+
     public function __construct()
     {
-        if (session_start()){
-            $this->check();
-        } else {
-            throw new Exception("Unable to init session");
-        }
-        
+        $this->check();
     }
 
     public function login($user, $pass){
         if ($user == $this->validUser && $pass == $this->validPass){
             $this->set();
+            return true;
         }
         return false;
     }
@@ -29,8 +27,8 @@ class Auth {
     }
 
     private function check(){
-        if (isset($_SESSION["isAuth"])){
-            if (!empty($_SESSION["isAuth"]) && $_SESSION["isAuth"] == true){
+        if (Session::isSet(self::ISAUTH)){
+            if (!empty(Session::get(self::ISAUTH)) && Session::get(self::ISAUTH) == true){
                 $this->isAuth = true;
             }
         }
@@ -38,11 +36,11 @@ class Auth {
 
     private function set(){
         $this->isAuth = true;
-        $_SESSION["isAuth"] = true;
+        Session::set("isAuth", true);
     }
 
     private function unset(){
         $this->isAuth = false;
-        $_SESSION["isAuth"] = false;
+        Session::set("isAuth", false);
     }
 }

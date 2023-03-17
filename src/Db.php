@@ -77,27 +77,14 @@ class Db extends \SQLite3{
 
     public function update(array $condition, array $colsAndVals){
         
-        $vals = array_map(function($key, $val):string {
-            $val = is_string($val)?"\"".$val."\"":$val;
-            return $key." = ". $val;
-        }, array_keys($colsAndVals), array_values($colsAndVals));
+        $vals = static::arrayMapSet($colsAndVals);
 
         if (!empty($vals)) $vals = implode(",", $vals);
         
-
-        $conds = array_map(function($key, $val){
-            $val = is_string($val)?"\"".$val."\"":$val;
-            return $key. " = " . $val;
-        }, array_keys($condition), array_values($condition));
-
-        if (!empty($conds)) $conds = implode(",", $conds);
-
         $query = "UPDATE ". $this->table;
-        
         $query .= " SET ".$vals." ";
-        
         $query .= " WHERE(";
-        $query .= $conds;
+        $query .= static::arrayToWhere($condition);
         $query .= ");";
 
         $this->query_string = $query;
@@ -105,10 +92,13 @@ class Db extends \SQLite3{
         return $this->changes();
     }
 
-    public function list(array $cols = null){
+    public function list(array $cols = null, array|null $where = null){
         $this->query_string = "SELECT ";
         $this->query_string .= $cols ? implode(", ", $cols) : "*";
         $this->query_string .= " FROM ".$this->table;
+        if ($where && !empty($where)){
+            $this->query_string .= " WHERE ". static::arrayToWhere($where);
+        }
         return $this;
     }
 
@@ -153,6 +143,22 @@ class Db extends \SQLite3{
         echo "Error EXcode: " . $this->lastExtendedErrorCode()."\n";
         echo "Message: " . $this->lastErrorMsg()."\n";
         echo "<pre>".print_r($this, true)."</pre>";
+    }
+
+    /**
+     * @param array $array ["key"=>"val", "key2"=>"val2"]
+     * 
+     * @return array ["key=val", "key2=val2"]
+     */
+    private static function arrayMapSet(array $array):array{
+        return array_map(function($key, $val){
+            $val = is_string($val)?"\"".$val."\"":$val;
+            return $key. " = " . $val;
+        }, array_keys($array), array_values($array));
+    }
+
+    private static function arrayToWhere(array $array):string{
+        return $array[0]."=".$array[1];
     }
 
 }

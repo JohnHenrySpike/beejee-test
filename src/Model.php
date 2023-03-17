@@ -16,6 +16,10 @@ class Model {
         $this->db->table($this->table);
     }
 
+    public function find(int $id){
+        return $this->db->list(null, ["id",$id])->get()->asArray()[0];
+    }
+
     public function insert(array $values, array $columns = null){
         return $this->db->insert($values, $columns);
     }
@@ -25,19 +29,22 @@ class Model {
     }
 
     public function updateById(int $id, array $colsAndVals){
-        return $this->db->update(["id"=>$id], $colsAndVals);
+        return $this->db->update(["id",$id], $colsAndVals);
     }
 
     public function delete(int $id){
         return $this->db->delete($id);
     }
 
-    public function list(array $cols = null, array $order, int $limit = 0, int $offset = 0){
+    public function list(array $cols = null, array|null $order = ["id", "ASC"], int $limit = 0, int $offset = 0){
         if ($this->usePaginate){
             $limit = $this->per_page;
             $offset = ($this->curr_page - 1) * $limit;
         }
-        return $this->db->list($cols)->order($order[0], $order[1])->limit($limit, $offset)->get()->asArray();
+        $this->db->list($cols);
+        if ($order) $this->db->order($order[0], $order[1]);
+        $this->db->limit($limit, $offset);
+        return $this->db->get()->asArray();
     }
 
     private function count(){

@@ -13,6 +13,7 @@ function migrate(){
         "email VARCHAR NOT NULL", 
         "text VARCHAR NOT NULL",
         "status INT NOT NULL DEFAULT 0",
+        "changed INT NOT NULL DEFAULT 0",
         "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
         "updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
     ]);

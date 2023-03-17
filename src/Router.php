@@ -14,13 +14,16 @@ class Router {
     public static function handle(){
         $router = new self();
         $router->init();
-
+        /**
+         * @var \Controller $controller
+         */
         $controller = new $router->ctrl_class($router->controller);
         $controller->run($router->getActionName(), $router->getQuery());
     }
 
     private function init(){
-        $this->path_info = $_SERVER['PATH_INFO'] ?? '/';
+        $this->path_info = $_SERVER['REQUEST_URI'] ?? '/';
+        $this->path_info = parse_url($this->path_info)["path"];
         $this->query_string = $_SERVER['QUERY_STRING'] ?? null;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->parse();
@@ -50,8 +53,12 @@ class Router {
         $this->controller = ucfirst($name);
     }
 
-    public static function redirect(string $conroller, string $action){
-        header("Location: /".$conroller."/".$action);
+    public static function redirect(string|null $conroller, string $action){
+        if ($conroller == null) {
+            header("Location: /".$action );
+        } else{
+            header("Location: /".$conroller."/".$action);
+        }
         exit();
     }
 
@@ -87,7 +94,6 @@ class Router {
         }
         return [];
     }
-    
 
     private function parse(){
 

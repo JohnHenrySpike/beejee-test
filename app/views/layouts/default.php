@@ -9,5 +9,6 @@
   <body class="p-3 m-0 border-0 bd-example bd-example-row">
     <?php $this->renderContent();?>
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
   </body>
 </html>

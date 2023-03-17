@@ -23,7 +23,7 @@ class Controller {
             if ($args){
                 $this->{$this->action}(Helpers::arrToObject($args));
             } else {
-                $this->{$this->action}();
+                $this->{$this->action}(null);
             }
         } else {
             throw new \Exception("Method not found");

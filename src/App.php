@@ -8,14 +8,16 @@ class App {
 
     public static $views_root = __DIR__.'/../app/views/';
 
-    private static $title = "title";
+    private static $title = "Список задач";
 
     public static function run(){
-        if (preg_match('/\.(?:js|css)$/', $_SERVER["REQUEST_URI"])) {
-            return false;
-        } else {
-            Router::handle();
+        if (php_sapi_name() == 'cli-server'){
+            if (preg_match('/\.(?:js|css)$/', $_SERVER["REQUEST_URI"])) {
+                return false;
+            }
         }
+        Session::init();
+        Router::handle();
     }
 
     public static function title(){
